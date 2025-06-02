@@ -1,35 +1,33 @@
-from flask import Flask, render_template, request, send_from_directory, url_for
+from flask import Flask, request, send_file, render_template_string
 import os
-import uuid
 
 app = Flask(__name__)
-UPLOAD_DIR = "uploads"
-RESULT_DIR = "results"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-os.makedirs(RESULT_DIR, exist_ok=True)
 
-@app.route("/", methods=["GET", "POST"])
+HTML = open("index.html", encoding="utf-8").read()
+
+@app.route('/')
+def index():
+    return render_template_string(HTML)
+
+@app.route('/upload', methods=['POST'])
 def upload():
-    if request.method == "POST":
-        file = request.files["file"]
-        if not file:
-            return render_template("index.html", obj_url=None)
-        uid = str(uuid.uuid4())
-        input_path = os.path.join(UPLOAD_DIR, uid + ".jpg")
-        output_path = os.path.join(RESULT_DIR, uid + ".obj")
-        file.save(input_path)
+    file = request.files['file']
+    if not file:
+        return 'No file uploaded', 400
+    filepath = os.path.join('uploads', file.filename)
+    os.makedirs('uploads', exist_ok=True)
+    file.save(filepath)
 
-        # Dummy .obj content
-        with open(output_path, "w") as f:
-            f.write("# Dummy OBJ\nv 0 0 0\nv 1 0 0\nv 1 1 0\nf 1 2 3")
+    # VRN 처리 가정
+    output_path = 'face_output.obj'
+    with open(output_path, 'w') as f:
+        f.write('# dummy obj')
 
-        obj_url = url_for("result_file", filename=uid + ".obj")
-        return render_template("index.html", obj_url=obj_url)
-    return render_template("index.html", obj_url=None)
+    return render_template_string(HTML + '<br><a href="/download">.obj 다운로드</a>')
 
-@app.route("/results/<filename>")
-def result_file(filename):
-    return send_from_directory(RESULT_DIR, filename)
+@app.route('/download')
+def download():
+    return send_file('face_output.obj', as_attachment=True)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run()

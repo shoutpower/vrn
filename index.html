@@ -1,20 +1,13 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>VRN 얼굴 복원</title>
+    <title>VRN 업로더</title>
 </head>
 <body>
-  <h2>📸 얼굴 사진 업로드</h2>
-  <form method="post" enctype="multipart/form-data">
-    <input type="file" name="file" accept="image/*" required><br><br>
-    <input type="submit" value="Upload & Convert">
-  </form>
-  {% if obj_url %}
-    <hr>
-    <h3>🔻 결과 다운로드</h3>
-    <a href="{{ obj_url }}" download>.obj 파일 받기</a>
-  {% endif %}
+    <h2>얼굴 이미지 업로드</h2>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="업로드 & 변환">
+    </form>
 </body>
 </html>
