@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: vrn-webapp
+    env: python
+    buildCommand: ""
+    startCommand: gunicorn main:app
+    plan: free
